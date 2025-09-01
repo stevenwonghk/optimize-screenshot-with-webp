@@ -59,27 +59,12 @@
 				<key>ActionParameters</key>
 				<dict>
 					<key>COMMAND_STRING</key>
-					<string>file="$@"
-IMAGEOPT=/Applications/ImageOptim.app/Contents/MacOS/ImageOptim
+					<string>IMAGEOPT=/Applications/ImageOptim.app/Contents/MacOS/ImageOptim
 IMAGEMAGICK=/usr/local/bin/convert
 
-if [ "$#" -ne 1 ]; then
+if [ "$#" -lt 1 ]; then
     echo "No input file"
-    exit 0
-fi
-
-if [[ ! -e "$file" ]]; then
-    echo "File ($file) does not exist"
-fi
-a
-EXT=${file: -4}
-if [[ $EXT == ".jpg" ]]; then
-    TYPE=".jpg"
-elif [[ $EXT == ".png" ]]; then
-    TYPE=".png"
-else
-    echo "File ($file) is not jpg or png"
-    exit 2
+    exit 1
 fi
 
 if [[ ! -e "$IMAGEOPT" ]]; then
@@ -88,12 +73,34 @@ if [[ ! -e "$IMAGEOPT" ]]; then
     exit 3
 fi
 
-# Optimize Image using [ImageOptim](https://imageoptim.com/mac)
-$IMAGEOPT "$file"
 
-if test -e "$IMAGEMAGICK"; then
-    $IMAGEMAGICK "$file" "`dirname \"$file\"`/`basename \"$file\" $TYPE`.webp"
-fi</string>
+for file in "$@"
+do
+	EXT=${file: -4}
+	if [[ $EXT == ".jpg" ]]; then
+    	TYPE=".jpg"
+	elif [[ $EXT == ".png" ]]; then
+    	TYPE=".png"
+	elif [[ $EXT == ".gif" ]]; then
+    	TYPE=".gif"
+	else
+		continue
+	fi
+
+	if [[ ! -e "$file" ]]; then
+    	echo "File ($file) does not exist"
+		continue
+	fi
+
+	# Optimize Image using [ImageOptim](https://imageoptim.com/mac)
+	$IMAGEOPT "$file"
+
+	if test -e "$IMAGEMAGICK"; then
+    	$IMAGEMAGICK "$file" "`dirname \"$file\"`/`basename \"$file\" $TYPE`.webp"
+	fi
+done	
+
+</string>
 					<key>CheckedForUserDefaultShell</key>
 					<true/>
 					<key>inputMethod</key>
@@ -206,7 +213,7 @@ fi</string>
 				<key>isViewVisible</key>
 				<integer>1</integer>
 				<key>location</key>
-				<string>729.500000:252.000000</string>
+				<string>456.000000:584.000000</string>
 				<key>nibPath</key>
 				<string>/System/Library/Automator/Run Shell Script.action/Contents/Resources/Base.lproj/main.nib</string>
 			</dict>
@@ -219,7 +226,7 @@ fi</string>
 	<key>workflowMetaData</key>
 	<dict>
 		<key>folderActionFolderPath</key>
-		<string>~/Pictures/Screenshots</string>
+		<string>~/Desktop</string>
 		<key>workflowTypeIdentifier</key>
 		<string>com.apple.Automator.folderAction</string>
 	</dict>
